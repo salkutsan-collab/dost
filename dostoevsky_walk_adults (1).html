@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>По следам Раскольникова · литературная прогулка для взрослых</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Spectral:ital,wght@0,300;0,400;0,500;1,400&family=Special+Elite&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root {
+    --bg: #14110d;
+    --bg-2: #1c1813;
+    --bg-3: #231e17;
+    --paper: #d8cdb8;
+    --paper-dim: #a99d83;
+    --ink-soft: #c7bca6;
+    --rust: #a8492f;
+    --rust-light: #c96a4a;
+    --gold: #b8924a;
+    --line: #332c22;
+    --line-2: #43392c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--ink-soft);
+    font-family: 'Spectral', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.7;
+    font-weight: 300;
+  }
+  ::selection { background: var(--rust); color: var(--paper); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 24px;
+    position: relative;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(168, 73, 47, 0.08) 0%, transparent 60%),
+      linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+  }
+  .hero-kicker {
+    font-family: 'Special Elite', monospace;
+    font-size: 11px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--paper-dim);
+    margin-bottom: 36px;
+  }
+  .hero h1 {
+    font-family: 'Cormorant', serif;
+    font-size: clamp(52px, 11vw, 140px);
+    font-weight: 500;
+    line-height: 0.9;
+    color: var(--paper);
+    letter-spacing: -0.02em;
+    margin-bottom: 28px;
+  }
+  .hero h1 em { font-style: italic; color: var(--rust-light); }
+  .hero-sub {
+    font-family: 'Cormorant', serif;
+    font-style: italic;
+    font-size: clamp(20px, 3vw, 30px);
+    color: var(--paper-dim);
+    max-width: 640px;
+    margin-bottom: 56px;
+    line-height: 1.4;
+  }
+  .hero-epigraph {
+    max-width: 600px;
+    border-left: 2px solid var(--rust);
+    padding: 6px 0 6px 26px;
+    text-align: left;
+    font-style: italic;
+    color: var(--ink-soft);
+    margin-bottom: 56px;
+    font-size: 17px;
+    line-height: 1.6;
+  }
+  .hero-epigraph cite {
+    display: block;
+    margin-top: 10px;
+    font-style: normal;
+    font-family: 'Special Elite', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--rust-light);
+  }
+  .hero-stats {
+    display: flex;
+    gap: 48px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 56px;
+  }
+  .hstat { text-align: center; }
+  .hstat b {
+    display: block;
+    font-family: 'Cormorant', serif;
+    font-size: 42px;
+    font-weight: 500;
+    color: var(--rust-light);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .hstat span {
+    font-family: 'Special Elite', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--paper-dim);
+  }
+  .scroll-hint {
+    font-family: 'Special Elite', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--paper-dim);
+    animation: pulse 2.5s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+
+  /* INTRO */
+  .intro {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 90px 24px 50px;
+  }
+  .intro h2 {
+    font-family: 'Cormorant', serif;
+    font-size: 44px;
+    font-weight: 500;
+    color: var(--paper);
+    margin-bottom: 28px;
+    line-height: 1.05;
+  }
+  .intro h2 em { font-style: italic; color: var(--rust-light); }
+  .intro p { margin-bottom: 20px; text-align: justify; hyphens: auto; }
+  .intro .lead {
+    font-size: 21px;
+    font-style: italic;
+    color: var(--paper);
+    font-family: 'Cormorant', serif;
+    line-height: 1.5;
+  }
+  .logistics {
+    background: var(--bg-2);
+    border: 1px solid var(--line-2);
+    padding: 30px 32px;
+    margin: 40px 0;
+  }
+  .logistics h3 {
+    font-family: 'Special Elite', monospace;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 18px;
+  }
+  .logistics p { font-size: 16px; margin-bottom: 12px; }
+  .logistics .row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 15px;
+  }
+  .logistics .row:last-child { border-bottom: none; }
+  .logistics .row span:first-child { color: var(--ink-soft); }
+  .logistics .row span:last-child { color: var(--paper-dim); font-family: 'Special Elite', monospace; font-size: 12px; }
+
+  /* MAP */
+  .map-wrap { max-width: 1080px; margin: 0 auto; padding: 50px 24px; }
+  .map-wrap h2 {
+    font-family: 'Cormorant', serif;
+    font-size: 38px;
+    font-weight: 500;
+    text-align: center;
+    color: var(--paper);
+    margin-bottom: 8px;
+  }
+  .map-wrap .map-cap {
+    text-align: center;
+    font-style: italic;
+    color: var(--paper-dim);
+    margin-bottom: 28px;
+  }
+  #map {
+    height: 540px;
+    border: 1px solid var(--line-2);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+  }
+  .leaflet-container { background: #0d0b08; font-family: 'Spectral', serif; }
+  .leaflet-popup-content-wrapper {
+    background: var(--bg-2);
+    color: var(--ink-soft);
+    border-radius: 0;
+    border: 1px solid var(--rust);
+  }
+  .leaflet-popup-tip { background: var(--rust); }
+  .leaflet-popup-content { margin: 12px 16px; font-size: 14px; }
+  .leaflet-popup-content b { color: var(--rust-light); font-family: 'Cormorant', serif; font-size: 17px; }
+  .leaflet-control-attribution { background: rgba(20,17,13,0.85) !important; }
+  .leaflet-control-attribution, .leaflet-control-attribution a { color: var(--paper-dim) !important; font-size: 9px !important; }
+  .leaflet-control-zoom a { background: var(--bg-2) !important; color: var(--paper) !important; border-color: var(--line-2) !important; }
+  .leaflet-control-zoom a:hover { background: var(--rust) !important; }
+  .pin {
+    width: 34px; height: 34px;
+    background: var(--rust);
+    color: var(--paper);
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    border: 2px solid var(--bg);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.5);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .pin span {
+    transform: rotate(45deg);
+    font-family: 'Cormorant', serif;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .pin.food { background: var(--gold); border-radius: 50%; }
+  .pin.food span { transform: none; font-size: 13px; }
+
+  /* STATIONS */
+  .walk { max-width: 760px; margin: 0 auto; padding: 40px 24px 60px; }
+  .station {
+    margin-bottom: 20px;
+    padding: 50px 0 10px;
+    border-top: 1px solid var(--line-2);
+  }
+  .station:first-child { border-top: none; }
+  .st-head { margin-bottom: 26px; }
+  .st-num {
+    font-family: 'Special Elite', monospace;
+    font-size: 12px;
+    letter-spacing: 0.25em;
+    color: var(--rust-light);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .st-title {
+    font-family: 'Cormorant', serif;
+    font-size: 46px;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--paper);
+    margin-bottom: 14px;
+    letter-spacing: -0.01em;
+  }
+  .st-title em { font-style: italic; color: var(--rust-light); }
+  .st-addr {
+    font-family: 'Special Elite', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    color: var(--paper-dim);
+    text-transform: uppercase;
+  }
+  .station p { margin-bottom: 18px; text-align: justify; hyphens: auto; }
+  .station p.drop:first-letter {
+    font-family: 'Cormorant', serif;
+    font-size: 64px;
+    float: left;
+    line-height: 0.8;
+    padding: 6px 10px 0 0;
+    color: var(--rust-light);
+    font-weight: 500;
+  }
+  .quote {
+    font-family: 'Cormorant', serif;
+    font-size: 23px;
+    font-style: italic;
+    line-height: 1.45;
+    color: var(--paper);
+    margin: 30px 0;
+    padding-left: 28px;
+    border-left: 2px solid var(--rust);
+  }
+  .quote cite {
+    display: block;
+    margin-top: 12px;
+    font-family: 'Special Elite', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-style: normal;
+    color: var(--rust-light);
+  }
+  .aside-box {
+    background: var(--bg-2);
+    border: 1px solid var(--line-2);
+    padding: 24px 28px;
+    margin: 28px 0;
+  }
+  .aside-box .tag {
+    font-family: 'Special Elite', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+    display: block;
+  }
+  .aside-box p { font-size: 16px; margin-bottom: 12px; color: var(--ink-soft); }
+  .aside-box p:last-child { margin-bottom: 0; }
+
+  /* RIDDLE */
+  .riddle {
+    background: var(--bg-3);
+    border: 1px solid var(--rust);
+    padding: 26px 30px;
+    margin: 30px 0 10px;
+  }
+  .riddle .r-tag {
+    font-family: 'Special Elite', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--rust-light);
+    margin-bottom: 14px;
+    display: block;
+  }
+  .riddle .r-q {
+    font-family: 'Cormorant', serif;
+    font-size: 22px;
+    font-style: italic;
+    line-height: 1.4;
+    color: var(--paper);
+    margin-bottom: 20px;
+  }
+  .riddle .r-input { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .riddle .r-input input {
+    background: var(--bg);
+    color: var(--paper);
+    border: 1px solid var(--line-2);
+    padding: 12px 16px;
+    font-family: 'Cormorant', serif;
+    font-size: 20px;
+    width: 220px;
+  }
+  .riddle .r-input input:focus { outline: none; border-color: var(--rust); }
+  .riddle .r-input button {
+    background: var(--rust);
+    color: var(--paper);
+    border: none;
+    padding: 13px 24px;
+    font-family: 'Special Elite', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  .riddle .r-input button:hover { background: var(--rust-light); }
+  .riddle .r-fb { margin-top: 14px; font-family: 'Cormorant', serif; font-style: italic; font-size: 17px; min-height: 1.4em; }
+  .riddle .r-fb.ok { color: var(--gold); }
+  .riddle .r-fb.err { color: var(--rust-light); }
+  .riddle .r-letter {
+    display: inline-block;
+    font-family: 'Cormorant', serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--gold);
+    border: 1px solid var(--gold);
+    width: 44px; height: 44px;
+    line-height: 42px;
+    text-align: center;
+    margin-left: 4px;
+  }
+
+  /* PASSWORD PROGRESS (sticky) */
+  .pwd-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(20,17,13,0.96);
+    border-top: 1px solid var(--rust);
+    padding: 12px 16px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    transform: translateY(100%);
+    transition: transform 0.4s ease;
+    backdrop-filter: blur(6px);
+  }
+  .pwd-bar.on { transform: translateY(0); }
+  .pwd-bar .pwd-lbl {
+    font-family: 'Special Elite', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--paper-dim);
+  }
+  .pwd-bar .slots { display: flex; gap: 6px; }
+  .pwd-bar .slot {
+    width: 26px; height: 34px;
+    border-bottom: 2px solid var(--line-2);
+    font-family: 'Cormorant', serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--gold);
+    text-align: center;
+    line-height: 32px;
+  }
+  .pwd-bar .slot.filled { border-bottom-color: var(--gold); }
+
+  /* FINAL QUEST */
+  .finale {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 40px 24px 90px;
+  }
+  .finale-card {
+    background: var(--bg-2);
+    border: 1px solid var(--rust);
+    padding: 50px 40px;
+    text-align: center;
+  }
+  .finale-card .f-tag {
+    font-family: 'Special Elite', monospace;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--rust-light);
+    margin-bottom: 20px;
+  }
+  .finale-card h2 { font-family: 'Cormorant', serif; font-size: 40px; font-weight: 500; color: var(--paper); margin-bottom: 18px; }
+  .finale-card p { margin-bottom: 16px; }
+  .finale-input { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 28px 0; }
+  .finale-input input {
+    background: var(--bg);
+    color: var(--paper);
+    border: 1px solid var(--rust);
+    padding: 16px 22px;
+    font-family: 'Cormorant', serif;
+    font-size: 26px;
+    letter-spacing: 0.25em;
+    text-align: center;
+    text-transform: uppercase;
+    width: 320px;
+  }
+  .finale-input button {
+    background: var(--gold);
+    color: var(--bg);
+    border: none;
+    padding: 16px 28px;
+    font-family: 'Special Elite', monospace;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  .finale-reveal {
+    display: none;
+    margin-top: 28px;
+    padding: 32px;
+    background: var(--bg-3);
+    border: 1px solid var(--gold);
+    text-align: left;
+  }
+  .finale-reveal h3 { font-family: 'Cormorant', serif; font-size: 30px; font-style: italic; color: var(--gold); margin-bottom: 16px; }
+  .finale-reveal p { font-size: 17px; margin-bottom: 14px; }
+
+  /* TRANSITION */
+  .transition {
+    margin: 10px 0;
+    padding: 26px 28px;
+    background: linear-gradient(90deg, rgba(168,73,47,0.06), transparent);
+    border-left: 2px solid var(--line-2);
+  }
+  .transition .walk-label {
+    font-family: 'Special Elite', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--rust-light);
+    margin-bottom: 10px;
+  }
+  .transition .walk-label b { color: var(--gold); }
+  .transition p { font-size: 16px; font-style: italic; color: var(--paper-dim); margin: 0; text-align: left; }
+
+  /* FOOD */
+  .food { max-width: 920px; margin: 0 auto; padding: 70px 24px; }
+  .food h2 {
+    font-family: 'Cormorant', serif;
+    font-size: 44px;
+    font-weight: 500;
+    text-align: center;
+    color: var(--paper);
+    margin-bottom: 10px;
+  }
+  .food h2 em { font-style: italic; color: var(--rust-light); }
+  .food .food-lead { text-align: center; font-style: italic; color: var(--paper-dim); max-width: 560px; margin: 0 auto 44px; }
+  .food-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 20px; }
+  .fcard {
+    background: var(--bg-2);
+    border: 1px solid var(--line-2);
+    padding: 26px 26px 22px;
+    display: flex;
+    flex-direction: column;
+  }
+  .fcard .fc-when {
+    font-family: 'Special Elite', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+  .fcard h3 { font-family: 'Cormorant', serif; font-size: 27px; font-weight: 500; color: var(--paper); line-height: 1.05; margin-bottom: 8px; }
+  .fcard .fc-addr { font-family: 'Special Elite', monospace; font-size: 10px; letter-spacing: 0.08em; color: var(--paper-dim); text-transform: uppercase; margin-bottom: 16px; }
+  .fcard .fc-why { font-size: 15px; font-style: italic; line-height: 1.55; flex: 1; }
+
+  /* FOOTER */
+  .foot {
+    background: var(--bg-2);
+    border-top: 1px solid var(--line-2);
+    padding: 50px 24px;
+    text-align: center;
+  }
+  .foot p { max-width: 640px; margin: 0 auto 14px; font-size: 14px; color: var(--paper-dim); font-style: italic; }
+  .foot .src { font-family: 'Special Elite', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--line-2); margin-top: 24px; }
+  .ornament { color: var(--rust); font-size: 26px; margin: 0 auto 30px; letter-spacing: 0.5em; padding-left: 0.5em; }
+
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 56px; }
+    .st-title { font-size: 34px; }
+    .quote { font-size: 20px; }
+    #map { height: 400px; }
+    body { font-size: 17px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-kicker">Литературная прогулка · взрослая версия · ≈ 2 часа</div>
+  <h1>По следам<br><em>Раскольникова</em></h1>
+  <p class="hero-sub">Пешая прогулка по «Преступлению и наказанию» — по тем же дворам, мостам и распивочным, где Достоевский поселил своих героев и где жил сам</p>
+
+  <div class="hero-epigraph">
+    «Редко где можно было найти столько мрачных, резких и странных влияний на душу человека, как в Петербурге. Чего стоят одни климатические влияния! Между тем это административный центр всей России, и характер его должен отражаться на всём.»
+    <cite>Ф. М. Достоевский · Преступление и наказание</cite>
+  </div>
+
+  <div class="hero-stats">
+    <div class="hstat"><b>9</b><span>точек</span></div>
+    <div class="hstat"><b>9</b><span>загадок</span></div>
+    <div class="hstat"><b>≈3,5</b><span>км по улицам</span></div>
+    <div class="hstat"><b>2 ч</b><span>не спеша</span></div>
+  </div>
+
+  <div class="scroll-hint">↓ начать прогулку</div>
+</section>
+
+<!-- INTRO -->
+<section class="intro">
+  <div class="ornament">❧</div>
+  <h2>О чём эта <em>прогулка</em></h2>
+  <p class="lead">Достоевский писал «Преступление и наказание», живя в самом сердце того района, где разворачивается роман. Он зашифровал адреса буквами — «С—й переулок», «К—н мост», «В—й проспект» — но шифр прозрачен: всё это можно пройти ногами и сегодня. Этот маршрут проложен не по прямой, а по реальным улицам, ровно так, как ходили герои и автор.</p>
+
+  <p>Мы намеренно отказались от хронологии романа в пользу пешей логики. Точки выстроены так, чтобы маршрут шёл по кругу, без возвратов и петель. Начинаем у дома, где Достоевский писал роман, и заканчиваем там, где сходятся все нити, — у «Хрустального дворца» на углу Садовой и Вознесенского. При желании прогулку можно продлить до Музея-квартиры на Кузнечном (одна станция на метро).</p>
+
+  <p>Это взрослая версия. На каждой из девяти точек вас ждёт загадка — без подсказок, рассчитанная на того, кто роман читал внимательно. Каждый верный ответ открывает одну букву. Девять букв сложатся в слово, к которому ведёт весь роман. Между загадками — лирические отступления, точные цитаты и история места.</p>
+
+  <p style="background: var(--bg-3); border: 1px solid var(--rust); padding: 18px 24px; font-size: 16px;"><b style="color: var(--rust-light); font-family: 'Special Elite', monospace; font-size: 11px; letter-spacing: 0.15em;">КАК ИГРАть.</b> На каждой точке прочитайте загадку и впишите ответ — слово из романа. Система сама выделит из него нужную букву и добавит в пароль внизу экрана. Собрав все девять, введите финальное слово. Подсказок к загадкам нет: это квест для знатоков.</p>
+
+  <div class="logistics">
+    <h3>Логистика маршрута</h3>
+    <p style="font-style: italic; color: var(--paper-dim);">Все расстояния — пешком по улицам, не по прямой. Маршрут компактный: большинство переходов короче 10 минут.</p>
+    <div class="row"><span>1 → 2 · Дом Алонкина → Дом Сони</span><span>2 мин · 180 м</span></div>
+    <div class="row"><span>2 → 3 · Дом Сони → Кокушкин мост</span><span>3 мин · 240 м</span></div>
+    <div class="row"><span>3 → 4 · Кокушкин мост → Дом Раскольникова</span><span>3 мин · 250 м</span></div>
+    <div class="row"><span>4 → 5 · Дом Раскольникова → Сенная</span><span>5 мин · 400 м</span></div>
+    <div class="row"><span>5 → 6 · Сенная → Дом старухи (утюг)</span><span>10 мин · 800 м</span></div>
+    <div class="row"><span>6 → 7 · Дом старухи → Двор с камнем</span><span>9 мин · 750 м</span></div>
+    <div class="row"><span>7 → 8 · Двор с камнем → Вознесенский мост</span><span>4 мин · 350 м</span></div>
+    <div class="row"><span>8 → 9 · Вознесенский мост → Хрустальный дворец</span><span>3 мин · 240 м</span></div>
+    <div class="row"><span>Опционально: 9 → Музей Достоевского</span><span>метро, ~20 мин</span></div>
+  </div>
+
+  <p style="font-size: 16px; color: var(--paper-dim);"><b style="color: var(--gold); font-family: 'Special Elite', monospace; font-size: 12px; letter-spacing: 0.1em;">СОВЕТ.</b> Лучшее время — пасмурный день или ранний вечер: именно таким Петербург предстаёт в романе. Удобная обувь обязательна — брусчатка и неровные тротуары. Места отдыха и перекуса — в конце страницы.</p>
+</section>
+
+<!-- MAP -->
+<section class="map-wrap">
+  <h2>Карта маршрута</h2>
+  <p class="map-cap">Красные метки — точки маршрута, золотые — места отдыха. Линия проложена по улицам.</p>
+  <div id="map"></div>
+</section>
+
+<!-- WALK -->
+<section class="walk" id="walk"></section>
+
+<!-- FINALE QUEST -->
+<section class="finale">
+  <div class="finale-card">
+    <div class="f-tag">Финал квеста</div>
+    <h2>Соберите слово</h2>
+    <p>Девять загадок — девять букв. Вместе они складываются в слово, к которому ведёт весь роман и которым он назван наполовину.</p>
+    <p style="font-style: italic; color: var(--paper-dim);">Введите слово целиком, когда соберёте все буквы внизу экрана.</p>
+    <div class="finale-input">
+      <input type="text" id="finalInput" maxlength="9" placeholder="? ? ? ? ? ? ? ? ?" autocomplete="off">
+      <button onclick="checkFinale()">Открыть</button>
+    </div>
+    <div class="finale-reveal" id="finaleReveal">
+      <h3>Наказание</h3>
+      <p>Слово собрано. «Преступление» вы прошли по улицам — а «наказание» оказалось не каторгой и не судом. Для Достоевского наказание Раскольникова началось в ту же секунду, что и преступление: это не приговор, а отрезанность от людей, невозможность любить, ледяная пустота теории, которая обещала свободу, а принесла одиночество.</p>
+      <p>На каторге, в эпилоге, к нему приходит не раскаяние в юридическом смысле, а нечто большее — способность снова чувствовать. Соня, Евангелие, история о воскрешении Лазаря. Наказание перерастает в воскресение. Этим роман и заканчивается: «но тут уж начинается новая история… история постепенного обновления человека».</p>
+      <p style="margin-top: 24px; font-family: 'Cormorant', serif; font-style: italic; font-size: 20px; color: var(--gold);">Вы прошли весь путь Раскольникова. Осталось последнее — Музей на Кузнечном, где Достоевский поставил последнюю точку.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PASSWORD BAR -->
+<div class="pwd-bar" id="pwdBar">
+  <span class="pwd-lbl">Пароль:</span>
+  <div class="slots" id="pwdSlots"></div>
+</div>
+
+<!-- FOOD -->
+<section class="food">
+  <div class="ornament">❧</div>
+  <h2>Где перевести <em>дух</em></h2>
+  <p class="food-lead">Четыре места по маршруту, каждое — со своей нитью к роману или к самому Достоевскому.</p>
+  <div class="food-grid">
+
+    <div class="fcard">
+      <div class="fc-when">Старт · завтрак или кофе</div>
+      <h3>Маковый Jam</h3>
+      <div class="fc-addr">Гражданская ул., 14 · у Дома Раскольникова</div>
+      <p class="fc-why">Маленькая гостиная с пианино и книжными полками, наискосок от Дома Раскольникова. «То самое место, где никто не смотрит на вас с осуждением, если вы заказали только чай». Хорошо начать утро здесь, перед погружением в роман.</p>
+    </div>
+
+    <div class="fcard">
+      <div class="fc-when">Середина · обед в трущобной эстетике</div>
+      <h3>Северянин</h3>
+      <div class="fc-addr">Столярный пер., 18 · в переулке Раскольникова</div>
+      <p class="fc-why">Ресторан в том самом Столярном переулке, обставленный как квартира 150-летней давности: дерево, патина, полумрак, в котором «нет яркого света вообще». Северная кухня — кильки, грузди, щучья икра, скоблянка. Самый атмосферный обед маршрута.</p>
+    </div>
+
+    <div class="fcard">
+      <div class="fc-when">У Дома старухи · простой суп</div>
+      <h3>Изба</h3>
+      <div class="fc-addr">Наб. канала Грибоедова, 120 · рядом с точкой 6</div>
+      <p class="fc-why">Трактирная простота: ряды столов, утварь по стенам, девять видов супа — окрошка, щи, солянка, гороховый с копчёностями. Такую еду ели студенты и мещане в распивочных вокруг Сенной. Без концепций — просто сытно и по-настоящему.</p>
+    </div>
+
+    <div class="fcard">
+      <div class="fc-when">Финал · кутёж и психология</div>
+      <h3>Консерватор</h3>
+      <div class="fc-addr">Просп. Римского-Корсакова, 5–7 · у Дома старухи</div>
+      <p class="fc-why">Бар с мрачным петербургским интерьером, где над панелями вырастает «густой лес», а коктейли подают по психотипу гостя — после теста с геометрическими фигурами. Финал для тех, кто хочет обсудить теорию Раскольникова за бокалом. Раскольников бы оценил «психологию».</p>
+    </div>
+
+  </div>
+  <p style="text-align:center; margin-top: 36px; font-style: italic; color: var(--paper-dim); font-size: 14px;">Также по теме — ресторан «Идiотъ» на Мойке, 82 (русская кухня, назван в честь романа) и бар «Раскольников» в отеле «Достоевский» на Владимирском, 19 (если идёте до Музея). Бронируйте выходные заранее.</p>
+</section>
+
+<!-- FOOTER -->
+<footer class="foot">
+  <div class="ornament">※</div>
+  <p>Маршрут составлен по роману «Преступление и наказание», воспоминаниям А. Г. Достоевской, топографическим исследованиям Н. П. Анциферова и Б. Голубицкого, материалам Литературно-мемориального музея Ф. М. Достоевского, изданий «Бумага», «Родина», Paperpaper, Мир Квартир и Wikipedia.</p>
+  <p>Адреса героев романа условны: Достоевский создавал свой Петербург — узнаваемый, но не тождественный реальному. Где versия одна — она названа. Где их несколько — указано.</p>
+  <p class="src">Литературная прогулка · взрослая версия · для читавших роман</p>
+</footer>
+
+<script>
+const stations = [
+  {
+    id: 1,
+    title: "Дом <em>Алонкина</em>",
+    subtitle: "Здесь Достоевский писал роман",
+    addr: "Казначейская ул., 7 / Столярный пер., 14",
+    coords: [59.925540, 30.312920],
+    paras: [
+      { drop: true, text: 'Начнём не с героя, а с автора. В этом доме купца Ивана Алонкина Достоевский снимал квартиру с 1864 по 1867 год — и именно здесь, в углу Казначейской и Столярного, написал «Преступление и наказание» и «Игрок». Окна выходили на тот самый район, который он сделал декорацией романа.' },
+      { text: 'Достоевский вечно искал жильё подешевле — он был по уши в долгах, проигрывался в рулетку, заключал кабальные договоры с издателями. Но именно эта бедность держала его в гуще той жизни, которую он описывал. Он не наблюдал трущобы со стороны — он в них жил.' },
+      { text: 'Купец Алонкин, хозяин дома, так понравился писателю, что стал прообразом купца Самсонова в «Братьях Карамазовых». А «Игрока» Достоевский надиктовал здесь за 26 дней стенографистке Анне Сниткиной — чтобы успеть к кабальному сроку. Через несколько месяцев она стала его женой.' }
+    ],
+    quote: { text: 'Это была крошечная клетушка, шагов в шесть длиной, имевшая самый жалкий вид с своими жёлтенькими, пыльными и всюду отставшими от стены обоями…', cite: 'О комнате Раскольникова — но Достоевский знал такие клетушки не понаслышке' },
+    aside: { tag: 'Лирическое отступление', paras: [
+      'Обратите внимание на сам угол Казначейской и Столярного. Казначейская в XIX веке называлась Малой Мещанской — и три Мещанские улицы (теперь Казанская, Гражданская, Казначейская) были сердцем небогатого, чиновничьего, ремесленного Петербурга.',
+      'Любопытный факт: в этом же доме за пару десятилетий до Достоевского успел пожить Александр Грибоедов. Один дом — два классика, оба написали здесь свои главные вещи.'
+    ]},
+    riddle: {
+      q: 'Полное имя главного героя романа — то, которым его зовут мать и сестра, и которое значит «родина». Назовите это имя.',
+      answer: 'РОДИОН',
+      pos: 6
+    }
+  },
+  {
+    id: 2,
+    title: "Дом <em>Сони Мармеладовой</em>",
+    subtitle: "«Дом с безобразным тупым углом»",
+    addr: "Наб. канала Грибоедова, 73 / Казначейская ул., 13",
+    coords: [59.926180, 30.314620],
+    paras: [
+      { drop: true, text: 'В нескольких шагах от дома, где жил автор, — дом, куда он поселил Соню. Угловое здание с характерным «безобразным тупым углом», выходящее на канал, который Достоевский упорно зовёт «канавой». Соня снимает здесь комнату у портного Капернаумова — фамилия не случайна, она отсылает к евангельскому Капернауму.' },
+      { text: 'Соня — центр нравственной вселенной романа. Падшая женщина, торгующая собой ради спасения семьи, она единственная, кому Раскольников решается признаться в убийстве. И именно она велит ему сделать то, что станет первым шагом к воскресению: выйти на перекрёсток, поклониться земле и сказать вслух: «Я убил».' }
+    ],
+    quote: { text: 'Поди сейчас, сию же минуту, стань на перекрёстке, поклонись, поцелуй сначала землю, которую ты осквернил, а потом поклонись всему свету, на все четыре стороны, и скажи всем, вслух: «Я убил!»', cite: 'Соня — Раскольникову' },
+    aside: { tag: 'История места', paras: [
+      'С 1849 по 1918 год в этом доме располагалась Губернская казённая палата — государственное казначейство. Именно поэтому в 1882 году Малую Мещанскую переименовали в Казначейскую. Достоевский, живший рядом, поселил кроткую Соню буквально в одном доме с казёнными деньгами — невольная, но злая ирония.',
+      'В советское время дом надстроили двумя этажами и переделали фасад под «сталинский классицизм». Так что нынешнее здание — это исторический дом Сони плюс две поздние крыши. Тупой угол, впрочем, сохранился.'
+    ]},
+    riddle: {
+      q: 'Имя кроткой сестры старухи-процентщицы — той, что торговала на Сенной и шила бельё, и которую Раскольников убил, потому что она вошла не вовремя. Назовите её имя.',
+      answer: 'ЛИЗАВЕТА',
+      pos: 4
+    }
+  },
+  {
+    id: 3,
+    title: "Кокушкин <em>мост</em>",
+    subtitle: "С него начинается роман",
+    addr: "Канал Грибоедова, у Столярного переулка",
+    coords: [59.925950, 30.313410],
+    paras: [
+      { drop: true, text: 'С этого моста Достоевский начинает «Преступление и наказание»: Раскольников выходит из каморки и идёт «к К—ну мосту». Кокушкин — самый литературный из малых мостов Петербурга. Длина 19 метров, и почти каждый русский классик его упомянул.' },
+      { text: 'В 1829 году Пушкин написал тут фривольную эпиграмму, из-за которой мост получил скандальную славу. Лермонтов в «Штоссе» назвал район Кокушкина моста «самой глухой частью города». Гоголь поселил рядом героя «Записок сумасшедшего» — в доме Зверкова. Здесь сходятся все «петербургские тексты» сразу.' }
+    ],
+    quote: { text: 'В начале июля, в чрезвычайно жаркое время, под вечер, один молодой человек вышел из своей каморки… и медленно, как бы в нерешимости, отправился к К—ну мосту.', cite: 'Первая фраза романа' },
+    aside: { tag: 'Деталь', paras: [
+      'Постойте на мосту и посмотрите вдоль канала. Отсюда, по словам исследователей, виден край дома Сони Мармеладовой — той самой «второй от угла». Достоевский выстраивал свою топографию так, чтобы герои были связаны линиями взгляда: с одной точки видна другая.',
+      'Решётка моста сохранилась почти неизменной с 1830-х. Раскольников, переходя его «в нерешимости», держался за те же перила.'
+    ]},
+    riddle: {
+      q: 'Студент в трактире у Сенной называл убийство старухи простым подсчётом: одна ничтожная жизнь против сотни спасённых. Каким школьным словом обозначается этот холодный подсчёт «выгоды», ставший сутью теории Раскольникова?',
+      answer: 'АРИФМЕТИКА',
+      pos: 9
+    }
+  },
+  {
+    id: 4,
+    title: "Дом <em>Раскольникова</em>",
+    subtitle: "Каморка под крышей, «гроб»",
+    addr: "Столярный пер., 5 / Гражданская ул., 19",
+    coords: [59.926080, 30.310730],
+    paras: [
+      { drop: true, text: 'Вот он — дом, который исследователи единодушно считают домом Раскольникова. Дом каретного мастера Иохима, построенный в 1831 году. Каморку героя Достоевский помещает под самой крышей: по роману, к ней ведут 13 ступенек, и она похожа «на шкаф» или на «гроб».' },
+      { text: 'Раскольников не выходит из этой каморки неделями, лёжа на драном диване, придумывая свою теорию о «тварях дрожащих» и «право имеющих». Теснота комнаты — буквальное воплощение тесноты его мысли, загнавшей себя в угол. Достоевский настаивал: среда давит на человека, но не освобождает его от ответственности.' }
+    ],
+    quote: { text: 'Каморка его приходилась под самою кровлей высокого пятиэтажного дома и походила более на шкаф, чем на квартиру… Это была крошечная клетушка, шагов в шесть длиной.', cite: 'Преступление и наказание, ч. 1' },
+    aside: { tag: 'Лирическое отступление', paras: [
+      'Внимательные читатели замечают нестыковку: в романе дом пятиэтажный, а сейчас в нём четыре этажа. Разгадка прозаична — цокольный этаж утратили при капремонте 1970 года. На углу дома — гранитно-бронзовый горельеф (1999), текст к нему написали Лихачёв и Гранин.',
+      'И ещё одна деталь, которую почти никто не замечает: на стене сохранилась отметка уровня воды наводнения 1824 года — того самого, которое Пушкин описал в «Медном всаднике». Два великих петербургских текста — на одной стене.'
+    ]},
+    riddle: {
+      q: 'Каким словом Достоевский называет крошечную комнату Раскольникова под крышей — ту, что он сравнивает со шкафом и гробом? (Уменьшительное от «комнаты», на «-морка».)',
+      answer: 'КАМОРКА',
+      pos: 2
+    }
+  },
+  {
+    id: 5,
+    title: "Сенная <em>площадь</em>",
+    subtitle: "«Брюхо Петербурга»",
+    addr: "Сенная площадь",
+    coords: [59.926850, 30.319750],
+    paras: [
+      { drop: true, text: 'Сенная — нервный узел романа. В трактире у Сенной Раскольников случайно слышит разговор студента с офицером: убить бесполезную старуху-процентщицу и её деньгами облагодетельствовать сотни людей — разве это не арифметика? Так чужая мысль, высказанная за кружкой пива, становится его навязчивой идеей.' },
+      { text: 'В XIX веке Сенная была «брюхом Петербурга»: рынок, грязь, толкотня, пьянство, проституция. Рядом находилась печально знаменитая Вяземская лавра — клубок ночлежек и притонов, дно города. Достоевский знал эту изнанку до мелочей.' }
+    ],
+    quote: { text: 'Он стал на колени среди площади, поклонился до земли и поцеловал эту грязную землю, с наслаждением и счастием. Он встал и поклонился в другой раз.', cite: 'Раскольников исполняет наказ Сони, ч. 6' },
+    aside: { tag: 'История места', paras: [
+      'Сам Достоевский в 1874 году отбывал на Сенной двухдневный арест на гауптвахте — за нарушение цензурного устава. Он читал тогда «Отверженные» Гюго. Так что покаянный поклон Раскольникова земле Сенной — это место, которое автор знал и изнутри тюрьмы.',
+      'В центре площади до 1961 года стояла церковь Успения (Спас-на-Сенной) — её снесли при строительстве метро. Сейчас обсуждается воссоздание. Площадь без своей доминанты выглядит обезглавленной — но именно такой её часто и видел Раскольников: пыльной, душной, без божьего покрова.'
+    ]},
+    riddle: {
+      q: 'На этой площади Раскольников, по совету Сони, встаёт на колени и целует то, что он, по её словам, «осквернил». Что именно он целует? (Одно слово, в единственном числе.)',
+      answer: 'ЗЕМЛЯ',
+      pos: 1
+    }
+  },
+  {
+    id: 6,
+    title: "Дом <em>старухи-процентщицы</em>",
+    subtitle: "«Дом-утюг»",
+    addr: "Наб. канала Грибоедова, 104 / пр. Римского-Корсакова, 25",
+    coords: [59.923380, 30.305130],
+    paras: [
+      { drop: true, text: 'Огромный доходный дом клинообразной формы — местные зовут его «утюгом». Он выходит сразу на три стороны, «одною стеной на канаву, а другою в —ю улицу», с двумя дворами и двумя воротами — ровно как у Достоевского. Здесь жила Алёна Ивановна, процентщица, и её кроткая сестра Лизавета.' },
+      { text: 'Достоевский отмерил путь Раскольникова с точностью землемера: 730 шагов от его каморки до дома старухи. Это не литературная фигура — это можно отсчитать. Анциферов, первый исследователь «Петербурга Достоевского», писал, что описание дома напоминает протокол следователя.' }
+    ],
+    quote: { text: 'С замиранием сердца и нервною дрожью подошёл он к преогромнейшему дому, выходившему одною стеной на канаву, а другою в —ю улицу. Этот дом стоял весь в мелких квартирах и заселён был всякими промышленниками.', cite: 'Дом процентщицы, ч. 1' },
+    aside: { tag: 'Лирическое отступление', paras: [
+      'Убийство задумано Раскольниковым «по теории» — как хладнокровная проверка, принадлежит ли он к «право имеющим». Но реальность ломает теорию мгновенно: в квартиру случайно входит Лизавета, и он убивает второго, ни в чём не повинного человека. С этого двойного удара топора и начинается его распад.',
+      'Обойдите дом кругом и найдите острый угол «утюга». Снизу он похож на нос корабля, врезающегося в перекрёсток трёх улиц. В этой агрессивной геометрии есть что-то от самого преступления — резкого, угловатого, безвозвратного.'
+    ]},
+    riddle: {
+      q: 'Имя старухи-процентщицы, к которой Раскольников ходил закладывать вещи и которую убил. Её отчество — Ивановна. Назовите имя.',
+      answer: 'АЛЕНА',
+      pos: 1
+    }
+  },
+  {
+    id: 7,
+    title: "Двор с <em>камнем</em>",
+    subtitle: "Где спрятано награбленное",
+    addr: "Вознесенский пр., 3–5 (двор Гавриловой)",
+    coords: [59.930050, 30.305400],
+    paras: [
+      { drop: true, text: 'Одно из самых документально достоверных мест маршрута. Сюда, в глухой двор, Раскольников приносит украденное у старухи — кошелёк, серьги, вещицы — и прячет под большой неотёсанный камень. И не возвращается за ними никогда. Деньги ему не нужны: он убивал не ради них.' },
+      { text: 'Анна Григорьевна, жена Достоевского, вспоминала: в первые недели брака муж завёл её во двор одного дома и показал тот самый камень, под которым «его Раскольников» спрятал вещи. На её вопрос, зачем он забрёл в этот пустынный двор, Достоевский смутился. Для него граница между романом и городом была проницаемой.' }
+    ],
+    quote: { text: 'Тут, у забора, подле ворот… лежал большой неотёсанный камень, примерно, может быть, фунтов в полтора веса… Под этот-то камень и сунул он все вещи и кошелёк.', cite: 'Преступление и наказание, ч. 2' },
+    aside: { tag: 'Факт', paras: [
+      'Реального двора в первозданном виде уже нет — на его месте давно стоит более поздняя застройка. Но место читается: это начало Вознесенского проспекта, у площади. Постойте здесь и подумайте, что значит спрятать улику, которой ты не воспользуешься. Раскольников прячет не деньги — он прячет сам факт, что преступление оказалось бессмысленным.',
+      'Порфирий Петрович позже скажет об этом коротко и страшно: «Убил, да и денег взять не сумел, а что успел захватить, то под камень снёс». Вся теория — под камень, в пыль.'
+    ]},
+    riddle: {
+      q: 'Под чем именно Раскольников спрятал украденное в этом дворе — большое, неотёсанное, весом примерно в полтора фунта? Назовите этот предмет.',
+      answer: 'КАМЕНЬ',
+      pos: 5
+    }
+  },
+  {
+    id: 8,
+    title: "Вознесенский <em>мост</em>",
+    subtitle: "Мост отчаяния",
+    addr: "Вознесенский мост через канал Грибоедова",
+    coords: [59.928420, 30.307680],
+    paras: [
+      { drop: true, text: 'Через этот мост проходит множество сцен романа. На нём Раскольников останавливается и смотрит в «чёрную воду» канала. Здесь же, на его глазах, мещанка Афросиньюшка бросается с моста в воду — неудачная попытка самоубийства, которая отзовётся в мыслях самого Раскольникова о Неве и воде как выходе.' },
+      { text: 'Вода у Достоевского — постоянный соблазн и постоянная угроза. Раскольников думает броситься в канал, но не может: вода кажется ему слишком лёгким исходом. Свидригайлов же в финале выбирает пулю, а не воду. Мост над «канавой» — это место, где герои стоят на грани между жизнью и её прекращением.' }
+    ],
+    quote: { text: 'Он стоял и смотрел вдаль долго и пристально; это место было ему особенно знакомо… Мутная вода канавы стала ему вдруг как будто ещё чернее.', cite: 'Раскольников на мосту' },
+    aside: { tag: 'Лирическое отступление', paras: [
+      'Канал Грибоедова при Достоевском назывался Екатерининским, а в народе — «Катькиной канавой» или просто «канавой». Изначально на его месте текла речка Глухая (Кривуша). Грязная, узкая, с тёмной водой — она идеально подошла Достоевскому как зеркало для душевного состояния героев.',
+      'Постойте на мосту в сумерках. Чёрная вода, низкое небо, сырость — это и есть тот самый петербургский морок, «самый умышленный город на свете», как назвал его Достоевский в «Записках из подполья». Город, придуманный назло природе и человеку.'
+    ]},
+    riddle: {
+      q: 'Тёмный двойник Раскольникова, развратник без совести, который договаривает вслух то, что Раскольников боится в себе, и в финале стреляется. «Мы одного поля ягоды», — говорит он. Назовите его фамилию.',
+      answer: 'СВИДРИГАЙЛОВ',
+      pos: 3
+    }
+  },
+  {
+    id: 9,
+    title: "«Хрустальный <em>дворец</em>»",
+    subtitle: "Гостиница Пале-де-Кристаль",
+    addr: "Угол Садовой ул. и Вознесенского пр. («Дом со шпилем»)",
+    coords: [59.927570, 30.310340],
+    paras: [
+      { drop: true, text: 'Финал маршрута — там, где сходятся нити романа. В черновиках Достоевский записал: «На углу Садовой и Вознесенского я набрёл на одну гостиницу… чтобы прочесть в газете об убийстве старухи». Это «Хрустальный дворец» — Пале-де-Кристаль, трактир в доме Вонлярской. Сюда Раскольников приходит читать газеты, ища сообщение о собственном преступлении.' },
+      { text: 'Здесь же происходит одна из самых жутких сцен — встреча со Свидригайловым, двойником Раскольникова, человеком без морали, который договорил вслух то, чего Раскольников боялся в себе. «Мы одного поля ягоды», — говорит ему Свидригайлов. Эта фраза — приговор теории.' }
+    ],
+    quote: { text: 'Мы одного поля ягоды… Я ведь только так, для красного словца, сказал; а впрочем, есть тут общая точка, а?', cite: 'Свидригайлов — Раскольникову, ч. 6' },
+    aside: { tag: 'История места', paras: [
+      'Нынешнее угловое здание со шпилем — это Дом городских учреждений архитектора Лишневского (1904–1906), готическая фантазия с химерами и грифонами. Но гостиница «Пале-де-Кристаль» времён Достоевского стояла здесь же, до перестройки. Название отсылало к лондонскому Хрустальному дворцу Всемирной выставки 1851 года — символу прогресса, к которому Достоевский относился с глубоким подозрением.',
+      'На этом маршрут можно завершить — либо продлить до Музея-квартиры Достоевского на Кузнечном переулке (от станции «Садовая» одна пересадка до «Достоевской»). Там, в последней квартире писателя, круг замкнётся: вы пройдёте от дома, где он писал «Преступление и наказание», до дома, где он умер, дописывая «Братьев Карамазовых».'
+    ]},
+    riddle: {
+      q: 'Соня читает Раскольникову евангельскую главу об одном чуде — и это слово становится главной надеждой романа, темой его финала: возвращение к жизни того, кто был мёртв. Каким одним словом называют это возвращение из мёртвых?',
+      answer: 'ВОСКРЕСЕНИЕ',
+      pos: 6
+    }
+  }
+];
+
+const transitions = [
+  null,
+  { time: '2 мин · 180 м', text: 'Выйдите на Казначейскую и пройдите к каналу. Дом Сони — на углу Казначейской и набережной канала Грибоедова, с тем самым «безобразным тупым углом».' },
+  { time: '3 мин · 240 м', text: 'От дома Сони — вдоль набережной канала к Кокушкину мосту. По дороге канал будет всё время справа: та самая «канава» Достоевского.' },
+  { time: '3 мин · 250 м', text: 'Перейдите Кокушкин мост и идите по Столярному переулку до угла с Гражданской. Это путь, которым Раскольников возвращался домой каждый день.' },
+  { time: '5 мин · 400 м', text: 'От Дома Раскольникова — по Столярному и далее к Сенной площади. Переулок выведет вас прямо в гущу «брюха Петербурга».' },
+  { time: '10 мин · 800 м', text: 'Самый длинный пеший отрезок. По Садовой улице на запад, затем к каналу в сторону Большой Подьяческой. Дом-утюг виден издалека по его клинообразной форме. Вы идёте тем же путём, что Раскольников шёл «делать пробу».' },
+  { time: '9 мин · 750 м', text: 'От Дома-утюга — обратно через канал и вверх к началу Вознесенского проспекта. Здесь, у площади, во дворе был спрятан камень. Двор не сохранился, но место читается.' },
+  { time: '4 мин · 350 м', text: 'От двора с камнем спуститесь по Вознесенскому проспекту к каналу — к Вознесенскому мосту. Вы движетесь по «коридору» Вознесенского, который в романе ведёт от «дна» к «верхам» города.' },
+  { time: '3 мин · 240 м', text: 'От моста — несколько шагов до угла Садовой и Вознесенского. Поднимите глаза: над углом висит шпиль. Здесь стоял «Хрустальный дворец».' }
+];
+
+// Render walk
+const walk = document.getElementById('walk');
+stations.forEach((st, idx) => {
+  if (idx > 0 && transitions[idx]) {
+    const tr = document.createElement('div');
+    tr.className = 'transition';
+    tr.innerHTML = `<div class="walk-label">Переход · <b>${transitions[idx].time}</b></div><p>${transitions[idx].text}</p>`;
+    walk.appendChild(tr);
+  }
+  const sec = document.createElement('div');
+  sec.className = 'station';
+  let html = `
+    <div class="st-head">
+      <div class="st-num">Точка ${st.id} · ${st.subtitle}</div>
+      <h2 class="st-title">${st.title}</h2>
+      <div class="st-addr">${st.addr}</div>
+    </div>
+  `;
+  st.paras.forEach(p => {
+    html += `<p${p.drop ? ' class="drop"' : ''}>${p.text}</p>`;
+  });
+  if (st.quote) {
+    html += `<div class="quote">«${st.quote.text}»<cite>${st.quote.cite}</cite></div>`;
+  }
+  if (st.aside) {
+    html += `<div class="aside-box"><span class="tag">${st.aside.tag}</span>`;
+    st.aside.paras.forEach(p => { html += `<p>${p}</p>`; });
+    html += `</div>`;
+  }
+  if (st.riddle) {
+    html += `
+      <div class="riddle" id="riddle-${st.id}">
+        <span class="r-tag">Загадка ${st.id} · буква пароля</span>
+        <div class="r-q">${st.riddle.q}</div>
+        <div class="r-input">
+          <input type="text" id="rin-${st.id}" placeholder="ответ — слово из романа" autocomplete="off">
+          <button onclick="checkRiddle(${st.id})">Разгадать</button>
+        </div>
+        <div class="r-fb" id="rfb-${st.id}"></div>
+      </div>
+    `;
+  }
+  sec.innerHTML = html;
+  walk.appendChild(sec);
+});
+
+// Food locations for map
+const foodSpots = [
+  { name: 'Маковый Jam', coords: [59.926300, 30.310200], label: 'кофе' },
+  { name: 'Северянин', coords: [59.924800, 30.310900], label: 'обед' },
+  { name: 'Изба', coords: [59.922500, 30.301800], label: 'суп' },
+  { name: 'Консерватор', coords: [59.922900, 30.300600], label: 'бар' }
+];
+
+// Map
+const map = L.map('map', { zoomControl: true }).setView([59.9265, 30.310], 14);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; OpenStreetMap &copy; CARTO', subdomains: 'abcd', maxZoom: 19
+}).addTo(map);
+
+const routeCoords = stations.map(s => s.coords);
+L.polyline(routeCoords, { color: '#a8492f', weight: 3, opacity: 0.8, dashArray: '2, 7', lineCap: 'round' }).addTo(map);
+
+stations.forEach(st => {
+  const icon = L.divIcon({ className: '', html: `<div class="pin"><span>${st.id}</span></div>`, iconSize: [34, 34], iconAnchor: [17, 34] });
+  L.marker(st.coords, { icon }).addTo(map)
+    .bindPopup(`<b>${st.id}. ${st.title.replace(/<[^>]+>/g,'')}</b><br>${st.addr}`);
+});
+
+foodSpots.forEach(f => {
+  const icon = L.divIcon({ className: '', html: `<div class="pin food"><span>☕</span></div>`, iconSize: [28, 28], iconAnchor: [14, 14] });
+  L.marker(f.coords, { icon }).addTo(map).bindPopup(`<b>${f.name}</b><br>${f.label}`);
+});
+
+map.fitBounds(L.latLngBounds(routeCoords), { padding: [50, 50] });
+
+// ─── QUEST LOGIC ─────────────────────────────────────────────────────────
+const PASSWORD = 'НАКАЗАНИЕ';
+const collected = stations.map(() => null); // letter per station index
+
+function normalize(s) {
+  return (s || '').trim().toUpperCase().replace(/Ё/g, 'Е');
+}
+
+function renderPwdBar() {
+  const bar = document.getElementById('pwdBar');
+  const slots = document.getElementById('pwdSlots');
+  slots.innerHTML = '';
+  let any = false;
+  PASSWORD.split('').forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'slot';
+    if (collected[i]) { d.textContent = collected[i]; d.classList.add('filled'); any = true; }
+    slots.appendChild(d);
+  });
+  if (any) bar.classList.add('on');
+}
+
+function checkRiddle(id) {
+  const st = stations.find(s => s.id === id);
+  const input = document.getElementById(`rin-${id}`);
+  const fb = document.getElementById(`rfb-${id}`);
+  const guess = normalize(input.value);
+  const answer = normalize(st.riddle.answer);
+  if (!guess) { fb.className = 'r-fb err'; fb.textContent = 'Впишите ответ.'; return; }
+  if (guess === answer) {
+    const letter = normalize(st.riddle.answer)[st.riddle.pos - 1];
+    collected[id - 1] = letter;
+    fb.className = 'r-fb ok';
+    fb.innerHTML = `Верно. Из этого слова берётся буква <span class="r-letter">${letter}</span> — она встаёт на ${id}-е место пароля.`;
+    input.disabled = true;
+    renderPwdBar();
+  } else {
+    fb.className = 'r-fb err';
+    fb.textContent = 'Не то. Вспомните текст романа и попробуйте снова.';
+  }
+}
+
+function checkFinale() {
+  const input = document.getElementById('finalInput');
+  const guess = normalize(input.value);
+  if (guess === PASSWORD) {
+    document.getElementById('finaleReveal').style.display = 'block';
+    input.disabled = true;
+    document.getElementById('finaleReveal').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  } else {
+    input.style.borderColor = '#c96a4a';
+    const fr = document.getElementById('finaleReveal');
+    fr.style.display = 'block';
+    fr.innerHTML = '<p style="color: var(--rust-light); font-style: italic; margin: 0;">Слово пока не сходится. Соберите все девять букв на точках маршрута и проверьте порядок.</p>';
+    setTimeout(() => { if (normalize(input.value) !== PASSWORD) fr.style.display = 'none'; input.style.borderColor = ''; }, 4000);
+  }
+}
+
+// Allow Enter key in riddle inputs
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && e.target.id && e.target.id.startsWith('rin-')) {
+    checkRiddle(parseInt(e.target.id.split('-')[1]));
+  }
+  if (e.key === 'Enter' && e.target.id === 'finalInput') checkFinale();
+});
+
+renderPwdBar();
+</script>
+</body>
+</html>
